@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceGuard AI - Live Monitoring RS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tosca: {
+                            DEFAULT: '#00a896',
+                            light: '#e6f7f5',
+                            dark: '#028090',
+                        },
+                        lightbg: '#f0f9ff',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-lightbg font-sans min-h-screen text-slate-700 flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-sky-100 px-8 py-4 shadow-sm flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="bg-tosca text-white p-2.5 rounded-xl shadow-md">
+                <i class="fa-solid fa-hospital text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl text-slate-800">FaceGuard<span class="text-tosca">.AI</span></h1>
+                <p class="text-xs text-tosca font-medium">Hospital Gate Control System</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4 md:space-x-6">
+            <a href="/" class="text-slate-500 hover:text-tosca transition font-semibold text-sm">Beranda</a>
+            <a href="/detection" class="text-tosca font-bold border-b-2 border-tosca pb-1 text-sm">Live Monitoring</a>
+            
+            <!-- Tombol Kontrol Audio -->
+            <button id="toggle-audio-btn" onclick="toggleAudio()" class="bg-teal-100 hover:bg-teal-200 text-tosca-dark text-xs font-bold px-3.5 py-1.5 rounded-full flex items-center gap-2 transition cursor-pointer">
+                <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+                <span id="audio-text">Suara Aktif</span>
+            </button>
+
+            <span class="hidden sm:flex bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1.5 rounded-full items-center gap-2">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Security Active
+            </span>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Live Stream & Dynamic Alert Area (2 Columns) -->
+        <div class="lg:col-span-2 flex flex-col space-y-5">
+            
+            <!-- Kotak Video Kamera -->
+            <div class="bg-white rounded-3xl p-6 border border-sky-100 shadow-sm flex flex-col space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-video text-tosca"></i> Kamera Pintu Masuk RS
+                    </h2>
+                    <span class="text-xs bg-slate-100 text-slate-500 font-semibold px-3 py-1 rounded-full">YOLOv8 v3 Model</span>
+                </div>
+
+                <!-- Frame Container -->
+                <div class="relative w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center border-2 border-teal-100">
+                    <img src="{{ url_for('video_feed') }}" alt="Live Stream Webcam" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- DYNAMIC LIVE NOTIFICATION BANNER -->
+            <div id="live-alert-box" class="bg-slate-100 border-l-8 border-slate-400 rounded-2xl p-6 shadow-md transition-all duration-300 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div id="live-alert-icon-bg" class="w-14 h-14 rounded-2xl bg-slate-200 text-slate-500 flex items-center justify-center text-2xl shrink-0 transition-colors duration-300">
+                        <i id="live-alert-icon" class="fa-solid fa-user-clock"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span id="live-alert-badge" class="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-600">
+                                MENUNGGU PENGUNJUNG
+                            </span>
+                            <span id="live-alert-conf" class="text-xs font-mono font-bold text-slate-400 hidden"></span>
+                        </div>
+                        <h3 id="live-alert-title" class="text-lg md:text-xl font-extrabold text-slate-800">
+                            Silakan Berdiri di Depan Kamera Portal
+                        </h3>
+                        <p id="live-alert-desc" class="text-xs md:text-sm text-slate-600 font-medium">
+                            Sistem siap memindai kelengkapan masker medis Anda sebelum pintu terbuka.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Side Panel (Status Akses Rumah Sakit) -->
+        <div class="space-y-6">
+
+            <!-- Panel Keputusan Akses Masuk RS -->
+            <div class="bg-white rounded-3xl p-6 border border-sky-100 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-md flex items-center gap-2">
+                        <i class="fa-solid fa-hospital-user text-tosca"></i> Keterangan Status Portal
+                    </h3>
+                </div>
+
+                <!-- Indikator Akses 1: Boleh Masuk -->
+                <div id="card-with_mask" class="p-4 bg-emerald-50/60 rounded-2xl border-l-4 border-emerald-500 space-y-1 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-emerald-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i> with_mask
+                        </span>
+                        <span class="text-[10px] bg-emerald-200 text-emerald-800 font-extrabold px-2.5 py-0.5 rounded-full">AKSES DIIZINKAN</span>
+                    </div>
+                    <p class="text-xs text-emerald-700 font-medium">
+                        "Silakan masuk. Terima kasih telah menggunakan masker sesuai standar protokol kesehatan RS."
+                    </p>
+                </div>
+
+                <!-- Indikator Akses 2: Peringatan Pakai Masker -->
+                <div id="card-without_mask" class="p-4 bg-rose-50/60 rounded-2xl border-l-4 border-rose-500 space-y-1 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-rose-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-xmark text-rose-500"></i> without_mask
+                        </span>
+                        <span class="text-[10px] bg-rose-200 text-rose-800 font-extrabold px-2.5 py-0.5 rounded-full">AKSES DITOLAK</span>
+                    </div>
+                    <p class="text-xs text-rose-700 font-medium">
+                        "Dilarang masuk! Harap gunakan masker medis terlebih dahulu sebelum memasuki area Rumah Sakit."
+                    </p>
+                </div>
+
+                <!-- Indikator Akses 3: Peringatan Posisi Masker -->
+                <div id="card-mask_worn_incorrectly" class="p-4 bg-amber-50/60 rounded-2xl border-l-4 border-amber-500 space-y-1 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-amber-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> mask_worn_incorrectly
+                        </span>
+                        <span class="text-[10px] bg-amber-200 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full">PERBAIKI MASKER</span>
+                    </div>
+                    <p class="text-xs text-amber-700 font-medium">
+                        "Masker Anda belum menutup hidung dan mulut dengan benar. Mohon perbaiki posisi masker Anda!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card Banner Control Gate -->
+            <div class="bg-gradient-to-br from-teal-600 to-tosca-dark text-white rounded-3xl p-6 shadow-md space-y-2">
+                <div class="flex items-center justify-between text-teal-200 text-xs font-semibold">
+                    <span>Gate Security System</span>
+                    <i id="gate-door-icon" class="fa-solid fa-door-closed text-xl"></i>
+                </div>
+                <h4 id="gate-door-status" class="font-bold text-base">Automatic Door: LOCKED</h4>
+                <p class="text-xs text-teal-100 leading-relaxed">
+                    Pintu otomatis RS hanya akan terbuka secara otomatis apabila sistem mendeteksi status valid <b>AKSES DIIZINKAN</b>.
+                </p>
+            </div>
+
+            <div class="text-center">
+                <a href="/" class="inline-flex items-center gap-2 text-xs font-bold text-tosca hover:text-tosca-dark transition">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Halaman Beranda
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-sky-100 py-4 text-center text-xs text-slate-400">
+        © 2026 FaceGuard AI Project — Luthfia & Salman
+    </footer>
+
+    <!-- Script Real-Time Polling & Voice Alert -->
+    <script>
+        const alertBox = document.getElementById('live-alert-box');
+        const alertIconBg = document.getElementById('live-alert-icon-bg');
+        const alertIcon = document.getElementById('live-alert-icon');
+        const alertBadge = document.getElementById('live-alert-badge');
+        const alertConf = document.getElementById('live-alert-conf');
+        const alertTitle = document.getElementById('live-alert-title');
+        const alertDesc = document.getElementById('live-alert-desc');
+
+        const doorIcon = document.getElementById('gate-door-icon');
+        const doorStatus = document.getElementById('gate-door-status');
+
+        const cards = {
+            with_mask: document.getElementById('card-with_mask'),
+            without_mask: document.getElementById('card-without_mask'),
+            mask_worn_incorrectly: document.getElementById('card-mask_worn_incorrectly')
+        };
+
+        // Konfigurasi Suara (Text-to-Speech)
+        let audioEnabled = true;
+        let lastSpokenState = "idle";
+        let lastSpokenTime = 0;
+        const SPEAK_COOLDOWN = 5000; // Jeda 5 detik jika status tetap sama agar tidak berisik
+
+        const voiceMessages = {
+            with_mask: "Akses diizinkan. Silakan masuk ke area Rumah Sakit.",
+            without_mask: "Peringatan. Anda tidak memakai masker. Dilarang masuk, harap gunakan masker terlebih dahulu.",
+            mask_worn_incorrectly: "Perhatian. Posisi masker Anda salah. Mohon tutup hidung dan mulut Anda dengan benar."
+        };
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('toggle-audio-btn');
+            const icon = document.getElementById('audio-icon');
+            const text = document.getElementById('audio-text');
+
+            if (audioEnabled) {
+                btn.className = "bg-teal-100 hover:bg-teal-200 text-tosca-dark text-xs font-bold px-3.5 py-1.5 rounded-full flex items-center gap-2 transition cursor-pointer";
+                icon.className = "fa-solid fa-volume-high";
+                text.textContent = "Suara Aktif";
+            } else {
+                window.speechSynthesis.cancel();
+                btn.className = "bg-slate-200 hover:bg-slate-300 text-slate-600 text-xs font-bold px-3.5 py-1.5 rounded-full flex items-center gap-2 transition cursor-pointer";
+                icon.className = "fa-solid fa-volume-xmark";
+                text.textContent = "Suara Nonaktif";
+            }
+        }
+
+        function speakAlert(state) {
+            if (!audioEnabled || !voiceMessages[state]) return;
+
+            const now = Date.now();
+            // Putar suara jika status berubah ATAU sudah melewati jeda 5 detik
+            if (state !== lastSpokenState || (now - lastSpokenTime > SPEAK_COOLDOWN)) {
+                window.speechSynthesis.cancel(); // Hentikan suara sebelumnya jika status berubah cepat
+
+                const utterance = new SpeechSynthesisUtterance(voiceMessages[state]);
+                utterance.lang = 'id-ID';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+
+                window.speechSynthesis.speak(utterance);
+
+                lastSpokenState = state;
+                lastSpokenTime = now;
+            }
+        }
+
+        function resetCardHighlights() {
+            Object.values(cards).forEach(card => {
+                card.classList.remove('ring-2', 'ring-offset-2', 'scale-[1.02]', 'shadow-md');
+                card.classList.add('opacity-70');
+            });
+        }
+
+        async function fetchDetectionStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+                const state = data.state;
+                const conf = data.confidence;
+
+                resetCardHighlights();
+
+                if (state === 'with_mask') {
+                    alertBox.className = "bg-emerald-50 border-l-8 border-emerald-500 rounded-2xl p-6 shadow-lg transition-all duration-300 flex items-center justify-between";
+                    alertIconBg.className = "w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl shrink-0";
+                    alertIcon.className = "fa-solid fa-circle-check";
+                    alertBadge.className = "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900";
+                    alertBadge.textContent = "AKSES DIIZINKAN • PINTU TERBUKA";
+                    alertConf.textContent = `Akurasi: ${conf}%`;
+                    alertConf.classList.remove('hidden');
+                    alertTitle.className = "text-lg md:text-xl font-extrabold text-emerald-900";
+                    alertTitle.textContent = "Silakan Masuk ke Area Rumah Sakit";
+                    alertDesc.className = "text-xs md:text-sm text-emerald-700 font-medium";
+                    alertDesc.textContent = "Terima kasih telah mematuhi protokol kesehatan dengan menggunakan masker secara benar.";
+
+                    cards.with_mask.classList.remove('opacity-70');
+                    cards.with_mask.classList.add('ring-2', 'ring-emerald-500', 'scale-[1.02]', 'shadow-md');
+
+                    doorIcon.className = "fa-solid fa-door-open text-xl text-emerald-300";
+                    doorStatus.textContent = "Automatic Door: OPEN";
+
+                    speakAlert('with_mask');
+
+                } else if (state === 'without_mask') {
+                    alertBox.className = "bg-rose-50 border-l-8 border-rose-500 rounded-2xl p-6 shadow-lg transition-all duration-300 flex items-center justify-between";
+                    alertIconBg.className = "w-14 h-14 rounded-2xl bg-rose-500 text-white flex items-center justify-center text-2xl shrink-0 animate-bounce";
+                    alertIcon.className = "fa-solid fa-circle-xmark";
+                    alertBadge.className = "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-200 text-rose-900";
+                    alertBadge.textContent = "PERINGATAN • AKSES DITOLAK";
+                    alertConf.textContent = `Akurasi: ${conf}%`;
+                    alertConf.classList.remove('hidden');
+                    alertTitle.className = "text-lg md:text-xl font-extrabold text-rose-900";
+                    alertTitle.textContent = "Dilarang Masuk! Harap Gunakan Masker";
+                    alertDesc.className = "text-xs md:text-sm text-rose-700 font-medium";
+                    alertDesc.textContent = "Anda terdeteksi tidak memakai masker. Silakan kenakan masker medis terlebih dahulu.";
+
+                    cards.without_mask.classList.remove('opacity-70');
+                    cards.without_mask.classList.add('ring-2', 'ring-rose-500', 'scale-[1.02]', 'shadow-md');
+
+                    doorIcon.className = "fa-solid fa-door-closed text-xl text-rose-300";
+                    doorStatus.textContent = "Automatic Door: LOCKED";
+
+                    speakAlert('without_mask');
+
+                } else if (state === 'mask_worn_incorrectly') {
+                    alertBox.className = "bg-amber-50 border-l-8 border-amber-500 rounded-2xl p-6 shadow-lg transition-all duration-300 flex items-center justify-between";
+                    alertIconBg.className = "w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl shrink-0";
+                    alertIcon.className = "fa-solid fa-triangle-exclamation";
+                    alertBadge.className = "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900";
+                    alertBadge.textContent = "PERHATIAN • POSISI MASKER SALAH";
+                    alertConf.textContent = `Akurasi: ${conf}%`;
+                    alertConf.classList.remove('hidden');
+                    alertTitle.className = "text-lg md:text-xl font-extrabold text-amber-900";
+                    alertTitle.textContent = "Mohon Perbaiki Posisi Masker Anda!";
+                    alertDesc.className = "text-xs md:text-sm text-amber-800 font-medium";
+                    alertDesc.textContent = "Pastikan masker menutupi seluruh bagian hidung, mulut, hingga dagu dengan rapat.";
+
+                    cards.mask_worn_incorrectly.classList.remove('opacity-70');
+                    cards.mask_worn_incorrectly.classList.add('ring-2', 'ring-amber-500', 'scale-[1.02]', 'shadow-md');
+
+                    doorIcon.className = "fa-solid fa-door-closed text-xl text-amber-300";
+                    doorStatus.textContent = "Automatic Door: LOCKED";
+
+                    speakAlert('mask_worn_incorrectly');
+
+                } else {
+                    alertBox.className = "bg-slate-100 border-l-8 border-slate-400 rounded-2xl p-6 shadow-sm transition-all duration-300 flex items-center justify-between";
+                    alertIconBg.className = "w-14 h-14 rounded-2xl bg-slate-200 text-slate-500 flex items-center justify-center text-2xl shrink-0";
+                    alertIcon.className = "fa-solid fa-user-clock";
+                    alertBadge.className = "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-600";
+                    alertBadge.textContent = "MENUNGGU PENGUNJUNG";
+                    alertConf.classList.add('hidden');
+                    alertTitle.className = "text-lg md:text-xl font-extrabold text-slate-800";
+                    alertTitle.textContent = "Silakan Berdiri di Depan Kamera Portal";
+                    alertDesc.className = "text-xs md:text-sm text-slate-600 font-medium";
+                    alertDesc.textContent = "Sistem siap memindai kelengkapan masker medis Anda sebelum pintu terbuka.";
+
+                    Object.values(cards).forEach(card => card.classList.remove('opacity-70'));
+                    doorIcon.className = "fa-solid fa-door-closed text-xl";
+                    doorStatus.textContent = "Automatic Door: LOCKED";
+
+                    lastSpokenState = "idle";
+                }
+            } catch (err) {
+                console.error("Gagal mengambil status deteksi:", err);
+            }
+        }
+
+        setInterval(fetchDetectionStatus, 300);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceGuard AI - Sistem Portal Akses Rumah Sakit</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tosca: {
+                            DEFAULT: '#00a896',
+                            light: '#e6f7f5',
+                            dark: '#028090',
+                            deep: '#05668d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-700 antialiased selection:bg-tosca selection:text-white">
+
+    <!-- 1. Header / Navigation -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-teal-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-tosca rounded-xl flex items-center justify-center text-white shadow-md shadow-tosca/30">
+                    <i class="fa-solid fa-hospital-user text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl text-slate-800 tracking-tight">FaceGuard<span class="text-tosca">.AI</span></span>
+                    <p class="text-[10px] text-tosca font-bold tracking-wider uppercase">Hospital Gate Security</p>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
+                <a href="/" class="text-tosca font-bold border-b-2 border-tosca pb-1">Beranda</a>
+                <a href="#fitur" class="hover:text-tosca transition">Status Portal</a>
+                <a href="#panduan" class="hover:text-tosca transition">Panduan Masker</a>
+                <a href="#protokol" class="hover:text-tosca transition">Aturan Akses</a>
+                <a href="#tim" class="hover:text-tosca transition">Tim</a>
+            </nav>
+
+            <div>
+                <a href="/detection" class="bg-tosca hover:bg-tosca-dark text-white text-sm font-bold px-6 py-3 rounded-full shadow-lg shadow-tosca/20 hover:shadow-xl hover:shadow-tosca/30 transition-all duration-300 flex items-center gap-2">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Mulai Deteksi Real-Time</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Hero Section -->
+    <section class="relative bg-gradient-to-b from-teal-50/80 via-sky-50/50 to-slate-50 pt-12 pb-20 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Text Content -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 bg-tosca-light border border-teal-200 text-tosca-dark text-xs font-bold px-4 py-2 rounded-full">
+                    <span class="w-2 h-2 bg-tosca rounded-full animate-ping"></span>
+                    Sistem Kontrol Akses Otomatis RS v3.0
+                </div>
+
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
+                    Keamanan Utama <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-tosca to-tosca-deep">Area Rumah Sakit</span> Berbasis AI
+                </h1>
+
+                <p class="text-slate-600 text-base leading-relaxed max-w-xl">
+                    Aplikasi pemantauan real-time bertenaga <b>YOLOv8</b> yang mendeteksi penggunaan masker medis di pintu masuk utama Rumah Sakit guna mencegah risiko penularan infeksi secara otomatis.
+                </p>
+
+                <div class="pt-2 flex flex-wrap gap-4 items-center">
+                    <a href="/detection" class="bg-tosca hover:bg-tosca-dark text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-tosca/25 hover:shadow-2xl transition-all duration-300 flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                        <span>Buka Live Monitoring Gate</span>
+                    </a>
+                    <a href="#panduan" class="bg-white hover:bg-slate-100 text-slate-700 font-bold px-6 py-4 rounded-2xl border border-slate-200 shadow-sm transition">
+                        Cara Pakai Masker Benar
+                    </a>
+                </div>
+
+                <!-- Mini Stats -->
+                <div class="pt-6 border-t border-slate-200/80 grid grid-cols-3 gap-4 max-w-md">
+                    <div>
+                        <p class="text-2xl font-black text-slate-800">YOLOv8</p>
+                        <p class="text-xs text-slate-500 font-medium">Model Architecture</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-black text-tosca">98%+</p>
+                        <p class="text-xs text-slate-500 font-medium">Akurasi mAP50</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-black text-slate-800">&lt; 30ms</p>
+                        <p class="text-xs text-slate-500 font-medium">Inference Latency</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Visual Mockup -->
+            <div class="lg:col-span-5 relative flex justify-center">
+                <div class="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-teal-100/80">
+                    <div class="w-full aspect-[4/3] bg-slate-900 rounded-2xl overflow-hidden relative flex items-center justify-center border border-slate-800">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
+                        <i class="fa-solid fa-head-side-mask text-7xl text-teal-400/40"></i>
+                        <span class="absolute top-4 left-4 z-20 bg-emerald-500/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> LIVE GATE CAM
+                        </span>
+                        
+                        <div class="absolute bottom-4 left-4 right-4 z-20 bg-emerald-500 text-white p-3 rounded-xl shadow-lg flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-check text-lg"></i>
+                                <div>
+                                    <p class="text-xs font-black">AKSES DIIZINKAN</p>
+                                    <p class="text-[10px] text-emerald-100">Masker Terpasang Sesuai Prosedur</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-white/20 px-2 py-1 rounded font-mono font-bold">conf: 0.92</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-teal-100 flex items-center space-x-3 hidden sm:flex">
+                        <div class="w-10 h-10 bg-teal-100 text-tosca rounded-xl flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-door-open"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">Automatic Barrier</p>
+                            <p class="text-[10px] text-emerald-600 font-semibold">Pintu Masuk Terbuka</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 3. Tosca Solid Feature Bar -->
+    <section id="fitur" class="bg-tosca text-white py-12 shadow-inner">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-xl mx-auto mb-10">
+                <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Teknologi Deteksi Presisi</p>
+                <h2 class="text-2xl font-bold">Tiga Status Deteksi Portal RS</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Status 1 -->
+                <div class="bg-white text-slate-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Status 1</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-2">With Mask</h3>
+                    <p class="text-slate-500 text-xs mt-1 leading-relaxed">
+                        Pengunjung menggunakan masker medis menutup hidung & mulut dengan sempurna. Pintu portal RS akan terbuka otomatis.
+                    </p>
+                </div>
+
+                <!-- Status 2 -->
+                <div class="bg-white text-slate-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300">
+                    <div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-xl flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </div>
+                    <span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Status 2</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-2">Without Mask</h3>
+                    <p class="text-slate-500 text-xs mt-1 leading-relaxed">
+                        Pengunjung tidak memakai masker. Alarm peringatan aktif & palang pintu akan tetap terkunci.
+                    </p>
+                </div>
+
+                <!-- Status 3 -->
+                <div class="bg-white text-slate-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-xl flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Status 3</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-2">Incorrect Mask</h3>
+                    <p class="text-slate-500 text-xs mt-1 leading-relaxed">
+                        Masker melorot ke dagu atau hidung terbuka. Sistem meminta pengunjung membenarkan posisi masker.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. BARU: Panduan Penggunaan Masker yang Baik & Benar -->
+    <section id="panduan" class="py-16 bg-gradient-to-b from-slate-50 to-white border-b border-teal-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+                <span class="bg-tosca-light text-tosca-dark text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Edukasi Pengunjung RS</span>
+                <h2 class="text-3xl font-extrabold text-slate-900">Standar Penggunaan Masker yang Benar</h2>
+                <p class="text-slate-500 text-sm">
+                    Pastikan Anda mengikuti panduan berikut agar sistem portal AI dapat memverifikasi akses masuk Anda dengan cepat.
+                </p>
+            </div>
+
+            <!-- Grid Perbandingan: Benar vs Salah -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                
+                <!-- Kolom KIRI: Cara Pemakaian yang BENAR (Akses Diterima) -->
+                <div class="bg-white rounded-3xl p-8 border-2 border-emerald-400 shadow-lg shadow-emerald-500/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-extrabold px-4 py-1.5 rounded-bl-2xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-check"></i> STANDAR LOLOS VERIFIKASI
+                    </div>
+
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl">
+                            <i class="fa-solid fa-head-side-mask"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-slate-900">Penggunaan Masker Tepat</h3>
+                            <p class="text-xs text-emerald-600 font-semibold">Terdeteksi sebagai: <code class="bg-emerald-50 px-1.5 py-0.5 rounded">with_mask</code></p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Tutup Hidung, Mulut, hingga Dagu</h4>
+                                <p class="text-xs text-slate-500">Pastikan seluruh area saluran pernapasan tertutup rapat tanpa celah di bagian atas maupun bawah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Tekan Kawat Penyangga Hidung</h4>
+                                <p class="text-xs text-slate-500">Bentuk kawat fleksibel mengikuti lekuk batang hidung agar masker tidak mudah melorot saat berbicara.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Sisi Berwarna Menghadap Luar</h4>
+                                <p class="text-xs text-slate-500">Lapisan tahan cairan (berwarna biru/hijau/tosca) berada di luar, sedangkan lapisan penyerap putih menempel di wajah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">Jangan Halangi Wajah dengan Benda Lain</h4>
+                                <p class="text-xs text-slate-500">Hindari menutupi area masker dengan tangan, botol minum, atau ponsel saat berdiri di depan kamera portal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom KANAN: Contoh Pemakaian SALAH (Akses Ditolak) -->
+                <div class="bg-white rounded-3xl p-8 border border-rose-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-14 h-14 bg-rose-100 text-rose-500 rounded-2xl flex items-center justify-center text-3xl">
+                                    <i class="fa-solid fa-ban"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">Hindari Kesalahan Ini</h3>
+                                    <p class="text-xs text-rose-500 font-semibold">Menyebabkan portal otomatis terkunci</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Kesalahan 1 -->
+                            <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-amber-600 font-bold text-xs flex items-center gap-1.5">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Hidung Terbuka
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed">
+                                    Masker hanya menutupi mulut sementara lubang hidung dibiarkan terbuka.
+                                </p>
+                            </div>
+
+                            <!-- Kesalahan 2 -->
+                            <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-amber-600 font-bold text-xs flex items-center gap-1.5">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Masker di Dagu
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed">
+                                    Menurunkan masker ke bawah dagu atau leher saat mengantre di pintu masuk.
+                                </p>
+                            </div>
+
+                            <!-- Kesalahan 3 -->
+                            <div class="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-rose-600 font-bold text-xs flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-xmark"></i> Masker Longgar
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed">
+                                    Tali telinga terlalu longgar sehingga bagian samping masker menganga lebar.
+                                </p>
+                            </div>
+
+                            <!-- Kesalahan 4 -->
+                            <div class="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-rose-600 font-bold text-xs flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-xmark"></i> Tanpa Masker
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed">
+                                    Memasuki area lobi atau poliklinik Rumah Sakit tanpa perlindungan masker sama sekali.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-slate-500">Siap menguji posisi masker Anda?</span>
+                        <a href="/detection" class="text-xs font-bold text-tosca hover:text-tosca-dark flex items-center gap-1">
+                            Cek di Kamera Sekarang <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Protocol & System Info -->
+    <section id="protokol" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            
+            <div class="space-y-6">
+                <span class="text-tosca font-bold text-xs uppercase tracking-wider">Hospital Protocol Standard</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">
+                    Mekanisme Kontrol Akses Otomatis
+                </h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Sistem ini terintegrasi langsung dengan kamera portal penerimaan pasien dan pengunjung RS. Pemrosesan citra dilakukan secara cepat dengan mitigasi <i>Occlusion Bias</i> yang mumpuni.
+                </p>
+
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-shield-virus text-tosca text-lg mt-0.5"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">Pencegahan Transmisi Penyakit</p>
+                            <p class="text-[11px] text-slate-500">Memastikan zona steril Rumah Sakit bebas dari paparan droplet tanpa masker.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-eye text-tosca text-lg mt-0.5"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">Robust terhadap Benda Penghalang</p>
+                            <p class="text-[11px] text-slate-500">Ditingkatkan dengan dataset v3 untuk membedakan masker asli vs botol minum/tangan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Profile Card Section -->
+            <div id="tim" class="bg-gradient-to-br from-teal-50 to-sky-50 p-8 rounded-3xl border border-teal-100 shadow-sm">
+                <div class="text-center mb-6">
+                    <p class="text-xs text-tosca font-bold uppercase tracking-wider">Project Developers</p>
+                    <h3 class="text-xl font-bold text-slate-800">Tim Pengembang Sistem</h3>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Developer 1 -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm text-center space-y-2 border border-slate-100">
+                        <div class="w-14 h-14 bg-tosca text-white rounded-full mx-auto flex items-center justify-center text-xl font-extrabold shadow-md">
+                            L
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">Luthfia</h4>
+                        <p class="text-[10px] text-tosca font-semibold">AI & Dataset Engineer</p>
+                    </div>
+
+                    <!-- Developer 2 -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm text-center space-y-2 border border-slate-100">
+                        <div class="w-14 h-14 bg-tosca-deep text-white rounded-full mx-auto flex items-center justify-center text-xl font-extrabold shadow-md">
+                            S
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">Salman</h4>
+                        <p class="text-[10px] text-tosca-deep font-semibold">Frontend & System Integration</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 6. Footer Dark Teal -->
+    <footer class="bg-slate-900 text-slate-300 py-10 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-tosca rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+                    <span class="font-extrabold text-lg text-white">FaceGuard<span class="text-tosca">.AI</span></span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Sistem pemantauan masker real-time berbasis Deep Learning YOLOv8 & Flask untuk perlindungan area Rumah Sakit.
+                </p>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider mb-3">Teknologi Utama</p>
+                <ul class="text-xs space-y-2 text-slate-400">
+                    <li>• YOLOv8 Object Detection</li>
+                    <li>• OpenCV Image Processing</li>
+                    <li>• Flask Python Framework</li>
+                    <li>• Tailwind CSS Design System</li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider mb-3">Akses Cepat</p>
+                <a href="/detection" class="inline-block bg-tosca hover:bg-tosca-dark text-white font-bold text-xs px-5 py-2.5 rounded-xl transition">
+                    Uji Kamera Live Monitoring →
+                </a>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 pt-8 mt-8 border-t border-slate-800 text-center text-[11px] text-slate-500">
+            © 2026 FaceGuard AI Project — Luthfia & Salman. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
